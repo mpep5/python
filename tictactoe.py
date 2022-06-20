@@ -1,7 +1,7 @@
 #!/usr/local/bin/python3
 
 ## TIC TAC TOE ##
-# Mike Pepe
+# Mike P.
 # Completed 40 years ago, reproduced here from scratch June 19, 2022
 #
 
