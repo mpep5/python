@@ -14,7 +14,7 @@ $ ./tictactoe.py
 Would you like to use Display mode or Computer Learn mode [D/L]? D
 How many consecutive games would you like to play? 1
 ...playing...
--|-|-
+```-|-|-
 -|-|-
 -|-|-
 
@@ -44,7 +44,7 @@ X|X|-
 
 X|O|O
 X|-|O
-X|X|-
+X|X|-```
 
 
 And the winner is...  X !!!
