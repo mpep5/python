@@ -143,34 +143,41 @@ def play_a_game(mode):
       break
     player = change_player(player)
 
+def display_stats(start_time,end_time,start_process,end_process,games):
+  elapsed_time = round(end_time - start_time,2)
+  process_time = round(end_process - start_process,4)
+  print("{:,}".format(games),"games were played in",elapsed_time,"seconds.")
+  print("Processor time utilized:",process_time,"seconds.")
+  xwin_rate = round((xwins / games * 100),2)
+  owin_rate = round((owins / games * 100),2)
+  nowin_rate = round((nowins / games * 100),2)
+  print("X won","{:,}".format(xwins),"times.  Win rate",xwin_rate,"%.")
+  print("O won","{:,}".format(owins),"times.  Win rate",owin_rate,"%.")
+  print("The cat won","{:,}".format(nowins),"times.  Win rate",nowin_rate,"%.")
+
 #
 # Main Code Section
 #
 def main():
   mode = ""
   games = 0
+  print()
   while (mode != "D" and mode != "L"):
     mode = input("Would you like to use Display mode or Computer Learn mode [D/L]? ")
   while (games < 1):
     games = input("How many consecutive games would you like to play? ")
     games = int(games)
+  print()
   print("...playing...")
+  print()
   start_time = time.time()
   start_process = time.process_time()
   for game_number in range(games):
     play_a_game(mode)
   end_process = time.process_time()
   end_time = time.time()
-  elapsed_time = round(end_time - start_time,2)
-  process_time = round(end_process - start_process,4)
-  print(games,"games were played in",elapsed_time,"seconds.")
-  print("Processor time utilized:",process_time,"seconds.")
-  xwin_rate = round((xwins / games * 100),2)
-  owin_rate = round((owins / games * 100),2)
-  nowin_rate = round((nowins / games * 100),2)
-  print("X won",xwins,"times.  Win rate",xwin_rate,"%.")
-  print("O won",owins,"times.  Win rate",owin_rate,"%.")
-  print("The cat won",nowins,"times.  Win rate",nowin_rate,"%.")
+  display_stats(start_time,end_time,start_process,end_process,games)
+  print()
 
 
 #
