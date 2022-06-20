@@ -1,5 +1,6 @@
 Python Practice and Programming Fun
 
+```
 $ ./tictactoe.py
 Would you like to use Display mode or Computer Learn mode [D/L]? L
 How many consecutive games would you like to play? 1000000
@@ -14,7 +15,8 @@ $ ./tictactoe.py
 Would you like to use Display mode or Computer Learn mode [D/L]? D
 How many consecutive games would you like to play? 1
 ...playing...
-```-|-|-
+
+-|-|-
 -|-|-
 -|-|-
 
@@ -44,7 +46,7 @@ X|X|-
 
 X|O|O
 X|-|O
-X|X|-```
+X|X|-
 
 
 And the winner is...  X !!!
@@ -54,3 +56,4 @@ Processor time utilized: 0.0011 seconds.
 X won 1 times.  Win rate 100.0 %.
 O won 0 times.  Win rate 0.0 %.
 The cat won 0 times.  Win rate 0.0 %.
+```
