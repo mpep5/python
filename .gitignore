@@ -1,0 +1,6 @@
+# Game history written by tictactoe.py (can grow to tens of MB)
+history.txt
+
+# Python bytecode caches
+__pycache__/
+*.pyc

@@ -19,9 +19,9 @@ T  Training The computer plays itself, silently and fast, and learns from
             history is read back at startup, so experience carries over
             between runs. Improvement and perfect play are not guaranteed.
             Randomness is deliberate here (a few random moves, random choice
-            among equally good moves) so it keeps
-            discovering new things. Prints results by stage of training, and
-            how the computer does against a random opponent before vs after.
+            among equally good moves) so it keeps discovering new things.
+            Prints results by stage of training, and how the computer does
+            against a random opponent before vs after.
 C  Compete  Computer vs computer with no randomness at all, to show what the
             history buys. Nothing is learned or saved. "History" contestants
             always play the best move the history knows (the lowest square

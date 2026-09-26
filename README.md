@@ -227,8 +227,8 @@ loss. It doesn't use the history.
 
 - Default location: `history.txt` next to `tictactoe.py`. Change it with
   `--history`.
-- It grows by about 19 bytes per game (3,000,000 games is about 57 MB), so you
-  may want to keep it out of version control.
+- It grows by about 19 bytes per game (3,000,000 games is about 57 MB), so
+  `.gitignore` keeps it out of version control.
 - Loading is the slow part: reading 3,000,000 games takes about 20 seconds in
   modes `T`, `D`, `C`, and `B`.
 - To start learning from scratch, delete it, or point `--history` at a new file.
@@ -246,6 +246,17 @@ loss. It doesn't use the history.
   each `0` (empty), `1` (X), or `2` (O).
 - Printing and sleeping live in presentation helpers, prompts (including the
   human player), and the `run_*` functions.
+
+### Running the tests
+
+The tests use only the standard library. From the repository folder:
+
+```
+$ python3 -m unittest -v
+```
+
+They never touch your real `history.txt`; the history tests use a temporary
+folder.
 
 ### Ideas for later
 
