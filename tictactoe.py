@@ -16,9 +16,10 @@ D  Display  Computer vs computer. Draws the board after every move and
             or saved in this mode.
 T  Training The computer plays itself, silently and fast, and learns from
             every game. Each game is appended to the history file, and the
-            history is read back at startup, so the computer keeps getting
-            better run after run. Randomness is deliberate here (a few random
-            moves, random choice among equally good moves) so it keeps
+            history is read back at startup, so experience carries over
+            between runs. Improvement and perfect play are not guaranteed.
+            Randomness is deliberate here (a few random moves, random choice
+            among equally good moves) so it keeps
             discovering new things. Prints results by stage of training, and
             how the computer does against a random opponent before vs after.
 C  Compete  Computer vs computer with no randomness at all, to show what the
@@ -40,7 +41,8 @@ B  Best     Analyzes the history to find the best opening. For each of the
 P  Player  You vs the computer. You choose squares 1-9. The computer takes a
             winning move if it has one, blocks yours if you have one, and
             otherwise picks a random open square. Before each game you
-            choose whether to go first (as X) or second (as O).
+            choose whether to go first (as X) or second (as O). This mode
+            does not use the trained brain or save games.
 
 Board representation
 --------------------
@@ -98,13 +100,14 @@ learning from scratch, delete it (or point --history at a new file).
 
 Design notes
 ------------
-Game logic (board, win detection, players, the brain) is kept free of
-printing and global state; ``play_game`` returns who won and the moves
-played, and the session runners tally results. Everything that prints or
-sleeps lives in the presentation helpers and the session runners.
+Board logic and the brain do not print; ``play_game`` returns who won and
+the moves played, and the session runners tally results. Random players use
+Python's shared random generator. Printing and sleeping live in presentation
+helpers, prompts (including the human player), and session runners.
 """
 
 import argparse
+import math
 import random
 import sys
 import time
@@ -172,7 +175,7 @@ MIN_REPLY_GAMES = 50    # fewest games for a reply to count in the best-reply an
 
 
 #
-# Game logic (no printing, no global state)
+# Game logic (board state is local to each game)
 #
 def new_board():
     """Return a fresh board: nine empty squares."""
@@ -365,12 +368,17 @@ def human_player(board, mark):
     """
     while True:
         entry = input(f"Your move ({SYMBOLS[mark]}), pick a square 1-9: ").strip()
-        if not entry.isdigit() or not 1 <= int(entry) <= 9:
+        try:
+            square = int(entry) - 1
+        except ValueError:
             print("Please enter a number from 1 to 9.")
-        elif board[int(entry) - 1] != EMPTY:
+            continue
+        if not 0 <= square < 9:
+            print("Please enter a number from 1 to 9.")
+        elif board[square] != EMPTY:
             print("That square is taken.")
         else:
-            return int(entry) - 1
+            return square
 
 
 #
@@ -796,11 +804,18 @@ def run_training_games(games, history_path):
 
     print("\n...learning...\n")
     start_wall, start_cpu = time.perf_counter(), time.process_time()
-    with open(history_path, "a") as history:
+    with open(history_path, "a+b") as history:
+        # A valid final record may have no newline (for example after editing).
+        # Inspect the last byte so the next game always starts on its own line.
+        history.seek(0, 2)
+        if history.tell():
+            history.seek(-1, 2)
+            if history.read(1) != b"\n":
+                history.write(b"\n")
         for game_number in range(games):
             winner, moves = play_game(players)
             brain.learn(moves, winner)
-            history.write(format_game(moves, winner) + "\n")
+            history.write((format_game(moves, winner) + "\n").encode("ascii"))
             results[winner] += 1
             trend[game_number * stages // games][winner] += 1
     elapsed = time.perf_counter() - start_wall
@@ -834,7 +849,7 @@ def run_player_games(games):
     """
     results = Counter()   # keys: "You", "the Computer", EMPTY (tie)
     for game_number in range(1, games + 1):
-        human_first = prompt_choice("\nDo you want to go first? [Y/N] ", "YN") == "Y"
+        human_first = prompt_choice("\nDo you want to go first? [Y/N] ", ("Y", "N")) == "Y"
         human_mark = X if human_first else O
         names = {human_mark: "You", other(human_mark): "the Computer"}
         players = {human_mark: human_player, other(human_mark): smart_player}
@@ -877,8 +892,8 @@ def parse_args(argv):
     args = parser.parse_args(argv)
     if args.games is not None and args.games < 1:
         parser.error("--games must be 1 or more")
-    if args.pause < 0:
-        parser.error("--pause cannot be negative")
+    if not math.isfinite(args.pause) or args.pause < 0:
+        parser.error("--pause must be a finite, non-negative number")
     return args
 
 

@@ -67,7 +67,8 @@ to moves known to win.
 computer plays its best known move. The other 10% it plays a random square, so
 it keeps discovering moves it hasn't tried. Ties between equally good moves are
 broken at random. Each game is added to the brain and appended to the history
-file straight away, so it keeps getting better run after run.
+file during training, so experience carries over between runs. Improvement
+is not guaranteed on every run, and training does not guarantee perfect play.
 
 ### Training mode (`T`)
 
@@ -106,11 +107,10 @@ The computer vs a random opponent (2,000 games as each side):
 The history file now holds 20,000 games.
 ```
 
-As the computer improves, self-play ties go up (two good players tie), and it
-does much better against a random opponent. Run it again and it continues from
-where it left off. After a few hundred thousand games it never loses as X and
-loses only 1-2% as O against a random opponent. To start over, delete the
-history file.
+Training can increase self-play ties and improve results against a random
+opponent. Run it again and it continues from where it left off. Results vary
+with the history and random choices; a benchmark with no losses does not
+prove the computer is unbeatable. To start over, delete the history file.
 
 ### Display mode (`D`)
 
@@ -237,15 +237,15 @@ loss. It doesn't use the history.
 
 ### How the code is organized
 
-- **Game logic** (board, win detection, players, the brain) has no printing and
-  no global state. `play_game()` returns the winner and the moves played.
+- **Board logic and the brain** do not print. `play_game()` returns the winner
+  and the moves played. Random players use Python's shared random generator.
 - **Players are functions** with the signature `f(board, mark) -> square`, so
   `random_player`, `smart_player`, `human_player`, and the learning player all
   plug into the same game loop. A new kind of player is just a new function.
 - **The board** is a flat list of 9 squares, read left to right, top to bottom,
   each `0` (empty), `1` (X), or `2` (O).
-- Everything that prints or sleeps lives in the presentation helpers and the
-  `run_*` functions.
+- Printing and sleeping live in presentation helpers, prompts (including the
+  human player), and the `run_*` functions.
 
 ### Ideas for later
 
